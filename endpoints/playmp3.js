@@ -48,119 +48,79 @@
  */
 
 const { Client, GatewayIntentBits, ChannelType } = require('discord.js');
-const {
-  joinVoiceChannel,
-  createAudioPlayer,
-  createAudioResource,
-  VoiceConnectionStatus,
-  entersState,
-  AudioPlayerStatus,
-  StreamType,
-} = require('@discordjs/voice');
-const prism = require('prism-media');
-const ShortUniqueId = require('short-unique-id');
+const { joinVoiceChannel, createAudioPlayer, createAudioResource, VoiceConnectionStatus, entersState, AudioPlayerStatus } = require('@discordjs/voice');
 
-// Map to store bot sessions and their queues
-const botSessions = new Map();
-
+// the api endpoint with headers, and querys 
 const playmp3 = async (req, res) => {
   const token = req.headers.authorization;
   const vcid = req.query.vcid;
   const serverid = req.query.serverid;
   const mp3Url = req.headers['mp3-url'];
-  const sessionId = req.headers['session-id'];
-
+  console.log(token, vcid, serverid, mp3Url);
+// check if the required perameters have been provided
   if (!token || !vcid || !serverid || !mp3Url) {
     return res.status(400).json({ error: 'Missing required parameters' });
   }
-
+// create a new Discord client
   const client = new Client({ intents: [GatewayIntentBits.Guilds, GatewayIntentBits.GuildVoiceStates] });
-
+// log into client with provided token from header and fetch the guild and voice channel
   try {
     await client.login(token);
+    console.log('Logged in successfully');
     const guild = await client.guilds.fetch(serverid);
+    console.log('Fetched guild successfully');
     const voiceChannel = await guild.channels.fetch(vcid);
-
+    console.log('Fetched voice channel successfully');
+// check if the voice channel is a voice channel
+// if the voice channel is not a voice channel, return an error
     if (voiceChannel.type !== ChannelType.GuildVoice) {
       return res.status(400).json({ error: 'Not a voice channel' });
     }
+// have the client connect to the voice channel 
+    const connection = joinVoiceChannel({
+      channelId: voiceChannel.id,
+      guildId: guild.id,
+      adapterCreator: guild.voiceAdapterCreator,
+    });
+    console.log('Connected to voice channel successfully');
+// wait for the connection to be ready
+    await entersState(connection, VoiceConnectionStatus.Ready, 30e3);
+    console.log('Connection ready successfully');
+// create an audio player and play the MP3 file
+    const player = createAudioPlayer();
+    const resource = createAudioResource(mp3Url);
+    player.play(resource);
+    connection.subscribe(player);
+    console.log('Playing MP3 file successfully');
 
-    if (!sessionId) {
-      if (botSessions.has(guild.id)) {
-        return res.status(400).json({ error: 'Bot is already connected, session ID required' });
+// check if the audio is playing and return the status
+    player.on(AudioPlayerStatus.Playing, () => {
+      res.json({ success: 'MP3 file is now playing', duration: resource.playbackDuration  });;
+    });
+// check once the audio has finished playing and disconnect from the voice channel
+    player.on(AudioPlayerStatus.Idle, () => {
+      connection.destroy();
+      client.destroy();
+      console.log('MP3 file has finished playing');
+    });;
+
+    player.play(resource);
+    connection.subscribe(player);
+
+    // Set a timeout to automatically destroy the client and disconnect after 1 hour 
+    setTimeout(() => {
+      if (connection.state.status !== VoiceConnectionStatus.Destroyed) {
+        connection.destroy();
+        client.destroy();
+        console.log('Destroyed the client and disconnected from the voice channel after 1 hour of continuous play.');
       }
-
-      const connection = joinVoiceChannel({
-        channelId: voiceChannel.id,
-        guildId: guild.id,
-        adapterCreator: guild.voiceAdapterCreator,
-      });
-
-      await entersState(connection, VoiceConnectionStatus.Ready, 30e3);
-
-      const player = createAudioPlayer();
-
-      // Generate a unique session ID
-      const uid = new ShortUniqueId();
-      const newSessionId = uid.randomUUID(15);
-
-      // Store the session ID, player, and queue in the map
-      botSessions.set(newSessionId, { player, queue: [], connection });
-
-      // Play the MP3 URL
-      playSong(newSessionId, mp3Url);
-
-      player.on(AudioPlayerStatus.Idle, () => {
-        // When the player is idle, play the next song in the queue
-        const session = botSessions.get(newSessionId);
-        if (session.queue.length > 0) {
-          const nextTrack = session.queue.shift();
-          playSong(newSessionId, nextTrack);
-        } else {
-          connection.destroy();
-          client.destroy();
-          botSessions.delete(newSessionId);
-        }
-      });
-
-      res.json({ success: 'MP3 file is now playing', sessionId: newSessionId });
-    } else {
-      if (botSessions.has(sessionId)) {
-        const session = botSessions.get(sessionId);
-        session.queue.push(mp3Url);
-        res.json({ success: 'Song added to queue', queueLength: session.queue.length });
-      } else {
-        res.status(404).json({ error: 'Session not found' });
-      }
-    }
+    }, 3600000); // 1 hour in milliseconds
+// error handling
   } catch (error) {
+    console.error(error);
     res.status(500).json({ error: 'Failed to play MP3 file' });
   }
 };
 
-function playSong(sessionId, mp3Url) {
-  const session = botSessions.get(sessionId);
-  const player = session.player;
-  const input = new prism.FFmpeg({
-    args: [
-      '-analyzeduration', '0',
-      '-loglevel', '0',
-      '-f', 'mp3',
-      '-i', mp3Url,
-      '-acodec', 'libopus',
-      '-ab', '35k',
-      '-ar', '44100',
-      '-ac', '2',
-      '-f', 'opus',
-    ],
-  });
-
-  const resource = createAudioResource(input, {
-    inputType: StreamType.OggOpus,
-  });
-
-  player.play(resource);
-  session.connection.subscribe(player);
-}
 
 module.exports = playmp3;
