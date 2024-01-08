@@ -87,6 +87,7 @@ const playmp3 = async (req, res) => {
     await entersState(connection, VoiceConnectionStatus.Ready, 30e3);
     console.log('Connection ready successfully');
 // create an audio player and play the MP3 file
+// create an audio player and play the MP3 file
     const player = createAudioPlayer();
     const resource = createAudioResource(mp3Url);
     player.play(resource);
@@ -95,9 +96,9 @@ const playmp3 = async (req, res) => {
 
 // check if the audio is playing and return the status
     player.on(AudioPlayerStatus.Playing, () => {
-      res.json({ success: 'MP3 file is now playing', duration: resource.playbackDuration  });;
+      res.json({ success: 'MP3 file is now playing'  });;
     });
-// check once the audio has finished playing and disconnect from the voice channel
+// check once the audio has finished playing and disconnect from the voice channel and log out of the client
     player.on(AudioPlayerStatus.Idle, () => {
       connection.destroy();
       client.destroy();
