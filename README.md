@@ -5,7 +5,7 @@ An API inspired by Dax's Multi-tool Botghost API, These API endpoints are made t
 
 Bugs/Issues are more then likley within the code as this is my first project😊
 
-Join the BotGhost Discord: [**Here**](https%3A%2F%2Fdiscord.com%2Finvite%2F9UPM6S4xyA)  
+BotGhost Discord: [**Here**](https%3A%2F%2Fdiscord.com%2Finvite%2F9UPM6S4xyA)  
 ![Discord](https://img.shields.io/discord/822426820447567872?logo=discord&label=BotGhost%20Discord&color=blue&link=https%3A%2F%2Fdiscord.com%2Finvite%2F9UPM6S4xyA)
 
 # 🚀API Docs
