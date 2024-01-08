@@ -3,6 +3,12 @@
 
 An API inspired by Dax's Multi-tool Botghost API, These API endpoints are made to assist users in their creation on discord bots with the website called "Botghost". These endpoints were created to assist in helping users acheive things not possible or complex within the Botghost application.
 
+to setup run `npm install`
+
+then,
+
+`npm start`
+
 Bugs/Issues are more then likley within the code as this is my first project😊
 
 BotGhost Discord: [**Here**](https%3A%2F%2Fdiscord.com%2Finvite%2F9UPM6S4xyA)  
