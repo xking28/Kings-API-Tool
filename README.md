@@ -10,4 +10,4 @@ BotGhost Discord: [**Here**](https%3A%2F%2Fdiscord.com%2Finvite%2F9UPM6S4xyA)
 
 # 🚀API Docs
 
-API Docs csn be found [at this link.](https://kings.api.xyz/docs)
+API Docs can be found [at this link.](https://kings.api.xyz/docs)
