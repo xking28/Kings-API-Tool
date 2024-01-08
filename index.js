@@ -21,7 +21,6 @@ async function Init() {
   const serverpresence = require('./endpoints/serverpresence');
   const transcript = require('./endpoints/transcript');
   const lowercase = require('./endpoints/lowercase');
-  const afk = require('./endpoints/afk');
   
   // POST requests
   app.post('/embed-builder/:channel_id', embedbuilder);
@@ -33,7 +32,6 @@ async function Init() {
   app.get('/snowflake/:snowflake', snowflake);
   app.get('/server-presence/:serverId', serverpresence);
   app.get('/transcript/:channelId', transcript);
-  app.get('/afk', afk);
 
   // Use requests
   app.use('/docs', swaggerui.serve, swaggerui.setup(specs));
