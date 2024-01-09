@@ -27,7 +27,7 @@ const options = {
     },
     servers: [
       {
-        url: 'https://kings-api.xyz',
+        url: `${req.protocol}://${req.get('host')}`,
         description: 'Kings API Tool'
       }
     ],
