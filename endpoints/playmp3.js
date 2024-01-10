@@ -100,18 +100,27 @@ const playmp3 = async (req, res) => {
         });
         player.play(resource);
         connection.subscribe(player);
-        console.log('Playing Opus file successfully');
+        console.log('Playing MP3 file successfully');
 
         player.on(AudioPlayerStatus.Playing, () => {
-          res.json({ success: 'Opus file is now playing', duration: resource.playbackDuration });
+          res.json({ success: 'MP3 file is now playing' });
         });
 
         player.on(AudioPlayerStatus.Idle, () => {
           connection.destroy();
           client.destroy();
-          console.log('Opus file has finished playing');
+          console.log('MP3 file has finished playing');
         });
       });
+        // Set a timeout to automatically destroy the client and disconnect after 1 hour 
+      setTimeout(() => {
+      if (connection.state.status !== VoiceConnectionStatus.Destroyed) {
+        connection.destroy();
+        client.destroy();
+        console.log('Destroyed the client and disconnected from the voice channel after 1 hour of continuous play.');
+      }
+    }, 6000000); // 10 minutes in milliseconds
+    // error handling
   } catch (error) {
     console.error(error);
     res.status(500).json({ error: 'Failed to play MP3 file' });
