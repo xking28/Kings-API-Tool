@@ -5,11 +5,12 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "node index.js"
+    "start": "node index.js",
+    "build": "npm install"
   },
   "keywords": [],
   "author": "xking28",
-  "license": "ISC",
+  "license": "MIT",
   "dependencies": {
     "@discordjs/opus": "^0.9.0",
     "@discordjs/voice": "^0.16.1",
@@ -18,6 +19,8 @@
     "@types/node": "^18.0.6",
     "axios": "^1.6.3",
     "body-parser": "^1.20.2",
+    "canvas": "^2.11.2",
+    "config": "^3.3.9",
     "discord-arts": "^0.5.8",
     "discord-html-transcripts": "^3.2.0",
     "discord.js": "^14.14.1",
@@ -29,6 +32,7 @@
     "node-pre-gyp": "^0.17.0",
     "opusscript": "^0.0.8",
     "python": "^0.0.4",
+    "sharp": "^0.33.1",
     "short-unique-id": "^5.0.3",
     "swagger-jsdoc": "^6.2.8",
     "swagger-ui-express": "^5.0.0",
