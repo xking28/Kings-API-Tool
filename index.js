@@ -1,6 +1,6 @@
 const express = require('express');
 const swaggerui = require('swagger-ui-express');
-const specs = require('./swaggerUI/swagger.js');
+const specs = require('./swaggerUI/swagger');
 const path = require('path');
 const fs = require('fs');
 
@@ -21,11 +21,15 @@ async function Init() {
   const serverpresence = require('./endpoints/serverpresence');
   const transcript = require('./endpoints/transcript');
   const lowercase = require('./endpoints/lowercase');
+  const profilecard = require('./endpoints/profilecard');
+  const rankcard = require('./endpoints/rankcard');
   
   // POST requests
   app.post('/embed-builder/:channel_id', embedbuilder);
   app.post('/check-for-num', checkfornum);
   app.post('/lowercase', lowercase);
+  app.post('/profile-card/:userid', profilecard);
+  app.post('/rank-card/:userid', rankcard);
 
   // GET requests
   app.get('/play-mp3', playmp3);
@@ -37,8 +41,9 @@ async function Init() {
   app.use('/docs', swaggerui.serve, swaggerui.setup(specs));
   app.use(express.static('public'));
 
-  // Transcripts folder is being served statically
+  // folders is being served statically
   app.use('/transcripts', express.static(path.join(__dirname, 'endpoints/transcripts')));
+  app.use('/cards', express.static(path.join(__dirname, 'endpoints/cards')));
 
   app.listen(PORT, () => {
     console.log(`Server is running on port ${PORT}`);
