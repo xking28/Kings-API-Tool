@@ -50,7 +50,7 @@
 
 const { Client, GatewayIntentBits, ChannelType } = require('discord.js');
 const { joinVoiceChannel, createAudioPlayer, createAudioResource, VoiceConnectionStatus, entersState, AudioPlayerStatus, StreamType } = require('@discordjs/voice');
-const ffmpeg = require('ffmpeg'); // make sure to install this package
+const ffmpeg = require('fluent-ffmpeg'); // make sure to install this package
 
 const playmp3 = async (req, res) => {
   const token = req.headers.authorization;
